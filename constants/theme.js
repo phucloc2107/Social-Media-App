@@ -1,7 +1,7 @@
 export const theme = {
     colors: {
-        primary: '#00C26F',
-        primaryDark: '#00AC62',
+        primary: '#FF9933',
+        primaryDark: '#FF9900',
         dark: '#3E3E3E',
         darkLight: '#E1E1E1',
         gray: '#e3e3e3',
@@ -15,7 +15,7 @@ export const theme = {
     },
     fonts: {
         medium: '500',
-        senubold: '600',
+        semibold: '600',
         bold: '700',
         extraBold: '800',
     },
