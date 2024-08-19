@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         borderCurve: 'continuous',
-        borderRadius: theme.radius.xl
+        borderRadius: theme.radius.xl,
     },
     text:{
         fontSize: hp(2.5),
         color: 'white',
-         fontWeight: theme.fonts.bold
+        fontWeight: theme.fonts.bold
     }
 })
