@@ -14,13 +14,13 @@ const home = () => {
     const {user, setAuth} = useAuth();
     const router = useRouter();
 
-    const onLogout = async() => {
-        //setAuth(null);
-        const {error} = await supabase.auth.signOut();
-        if (error) {
-            Alert.alert('Sign out', 'Error signing out!')
-        }
-    }
+    // const onLogout = async() => {
+    //     //setAuth(null);
+    //     const {error} = await supabase.auth.signOut();
+    //     if (error) {
+    //         Alert.alert('Sign out', 'Error signing out!')
+    //     }
+    // }
 
     return (
         <ScreenWrapper bg='white'>
