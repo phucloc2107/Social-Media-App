@@ -10,11 +10,15 @@ import { getUserImageSrc } from '../../services/imageService'
 import Icon from '../../assets/icons'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
+import { updateUser } from '../../services/userService'
+import { useRouter } from 'expo-router'
 
 const EditProfile = () => {
 
-  const {user: currentUser} = useAuth();
+  const {user: currentUser, setUserData} = useAuth();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
   const [user, setUser] = useState({
     name: '',
     phoneNumber: '',
@@ -50,7 +54,13 @@ const EditProfile = () => {
     }
     setLoading(true);
     // Update user
+    const res = await updateUser(currentUser?.id, userData);
+    setLoading(false);
 
+    if (res.success) {
+      setUserData({...currentUser, ...userData});
+      router.back()
+    }
   }
 
   return (
