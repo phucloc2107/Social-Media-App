@@ -68,6 +68,6 @@ const styles = StyleSheet.create({
     },
     flatStyle:{
         paddingHorizontal:8,
-        gap: 3
+        marginVertical:3
     }
 })
