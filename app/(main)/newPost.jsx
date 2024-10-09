@@ -92,7 +92,15 @@ const NewPost = () => {
     setLoading(true);
     let res = await createOrUpdatePost(data);
     setLoading(false);
-    console.log('post res: ', res);
+    //console.log('post res: ', res);
+    if(res.success){
+      setFile(null);
+      bodyRef.current = '';
+      editorRef.current?.setContentHTML('');
+      router.back();
+    }else {
+      Alert.alert('Post', res.msg);
+    }
   }
 
   return (
