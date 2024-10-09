@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View,Image, Pressable } from 'react-native'
+import { ScrollView, StyleSheet, Text, View,Image, Pressable, Alert } from 'react-native'
 import React, { useRef, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import Header from '../../components/Header'
@@ -13,7 +13,8 @@ import Icon from '../../assets/icons'
 import Button from '../../components/Button'
 import * as ImagePicker from 'expo-image-picker';
 import { getSupabaseFileUrl } from '../../services/imageService'
-
+import {Video} from 'expo-av';
+import { createOrUpdatePost } from '../../services/postService'
 
 const NewPost = () => {
 
@@ -59,7 +60,7 @@ const NewPost = () => {
     }
 
     // Check image or video for remote file
-    if (file.includes('postImage')) {
+    if (file.includes('postImages')) {
         return 'image';
     }
 
@@ -76,7 +77,22 @@ const NewPost = () => {
   }
 
   const onSubmit = async() => {
-    
+    if (!bodyRef.current && !file) {
+      Alert.alert('Post', 'please choose an image or add post body')
+      return;
+    }
+
+    let data = {
+      file,
+      body: bodyRef.current,
+      userId: user?.id,
+    }
+
+    // create post
+    setLoading(true);
+    let res = await createOrUpdatePost(data);
+    setLoading(false);
+    console.log('post res: ', res);
   }
 
   return (
@@ -111,7 +127,13 @@ const NewPost = () => {
               <View style={styles.flie}>
                 {
                   getFileType(file) == 'video'? (
-                    <></>
+                    <Video 
+                      style={{flex:1}}
+                      source={{uri: getFileUri(file)}}
+                      useNativeControls
+                      resizeMode='cover'
+                      isLooping
+                    />
                   ): (
                     <Image source={{uri: getFileUri(file)}} resizeMode='cover' style={{flex:1}} />
                   )
