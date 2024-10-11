@@ -42,7 +42,9 @@ const PostCard = ({item, currentUser, router, hasShadow = true}) => {
 
     }
 
-    const createdAt = moment(item?.created_at).format('MMM D')
+    const createdAt = moment(item?.created_at).format('MMM D');
+    const likes = [];
+    const liked = false;
 
     return (
         <View style={[styles.container, hasShadow && shadowStyles]}>
@@ -103,6 +105,35 @@ const PostCard = ({item, currentUser, router, hasShadow = true}) => {
                         />
                     )
                 }
+            </View>
+
+            {/* Like, comment and share */}
+            <View style={styles.footer}>
+                <View style={styles.footerButton}>
+                    <TouchableOpacity>
+                        <Icon name='heart' size={24} color={liked ? theme.colors.rose : theme.colors.textLight } fill={liked ? theme.colors.rose : 'transparent'} />
+                    </TouchableOpacity>
+                    <Text style={styles.count}>
+                        {
+                            likes?.length
+                        }
+                    </Text>
+                </View>
+                <View style={styles.footerButton}>
+                    <TouchableOpacity>
+                        <Icon name='comment' size={24} color={theme.colors.textLight } />
+                    </TouchableOpacity>
+                    <Text style={styles.count}>
+                        {
+                            0
+                        }
+                    </Text>
+                </View>
+                <View style={styles.footerButton}>
+                    <TouchableOpacity>
+                        <Icon name='share' size={24} color={theme.colors.textLight } />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     )
