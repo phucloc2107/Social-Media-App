@@ -20,6 +20,11 @@ export const getSupabaseFileUrl = filePath => {
 
 export const uploadFile = async (folderName, fileUri, isImage = true) => {
     try {
+
+        if (!fileUri.endsWith('.png') && !fileUri.endsWith('.jpg') && !fileUri.endsWith('.jpeg')) {
+            isImage = false;  // If it's not a recognized image file extension, treat it as video
+        }
+
         let fileName = getFilePath(folderName, isImage);
         const fileBase64 = await FileSystem.readAsStringAsync(fileUri, {
             encoding: FileSystem.EncodingType.Base64,

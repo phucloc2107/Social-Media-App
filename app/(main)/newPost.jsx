@@ -23,28 +23,25 @@ const NewPost = () => {
   const editorRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState(file);
+  const [file, setFile] = useState(null);
 
-  const onPick = async(isImage) => {
+  const onPick = async (isImage) => {
     let mediaConfig = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: isImage
+        ? ImagePicker.MediaTypeOptions.Images  // Set to Images when picking images
+        : ImagePicker.MediaTypeOptions.Videos, // Set to Videos when picking videos
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
-    }
-    if (!isImage) {
-      mediaConfig = {
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-        allowsEditing: true
-      }
-    }
+    };
+  
     let result = await ImagePicker.launchImageLibraryAsync(mediaConfig);
-
-    console.log('file: ', result.assets[0])
+  
     if (!result.canceled) {
+      console.log('Selected file:', result.assets[0]);
       setFile(result.assets[0]);
     }
-  }
+  };
 
   const isLocalFile = file => {
     if(!file) return null;
@@ -53,19 +50,20 @@ const NewPost = () => {
     return false;
   }
 
-  const getFileType = file => {
-    if(!file) return null;
-    if(isLocalFile(file)){
-      return file.type;
+  const getFileType = (file) => {
+    if (!file) return null;
+    
+    if (isLocalFile(file)) {
+      return file.type.includes('video') ? 'video' : 'image'; // Check the type of file directly
     }
-
-    // Check image or video for remote file
+  
+    // Check image or video for remote file (if using remote storage)
     if (file.includes('postImages')) {
-        return 'image';
+      return 'image';
     }
 
     return 'video';
-  }
+  };
 
   const getFileUri = file => {
     if(!file) return null;
@@ -160,7 +158,7 @@ const NewPost = () => {
                   <TouchableOpacity onPress={() => onPick(true)}>
                     <Icon name='image' size={30} color={theme.colors.dark} />
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => onPick(true)}>
+                  <TouchableOpacity onPress={() => onPick(false)}>
                     <Icon name='video' size={33} color={theme.colors.dark} />
                   </TouchableOpacity>
               </View>
