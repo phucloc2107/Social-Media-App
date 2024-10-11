@@ -6,6 +6,26 @@ import Avatar from './Avatar'
 import moment from 'moment'
 import Icon from '../assets/icons'
 import RenderHtml from 'react-native-render-html';
+import { Image } from 'expo-image'
+import { getSupabaseFileUrl } from '../services/imageService'
+import { Video } from 'expo-av'
+
+const textStyle = {
+    color: theme.colors.dark,
+    fontSize: hp(1.75)
+}
+
+const tagsStyles = {
+    div: textStyle,
+    p: textStyle,
+    ol: textStyle,
+    h1: {
+        color: theme.colors.dark
+    },
+    h4: {
+        color: theme.colors.dark
+    }
+}
 
 const PostCard = ({item, currentUser, router, hasShadow = true}) => {
     const shadowStyles = {
@@ -53,10 +73,36 @@ const PostCard = ({item, currentUser, router, hasShadow = true}) => {
                             <RenderHtml 
                                 contentWidth={wp(100)}
                                 source={{html: item?.body}}
+                                tagsStyles={tagsStyles}
                             />
                         )
                     }
                 </View>
+
+                {/* Post image */}
+                {
+                    item?.file && item?.file?.includes('postImages') && (
+                        <Image 
+                            source={getSupabaseFileUrl(item?.file)}
+                            transition={100}
+                            style={styles.postMedia}
+                            contentFit='cover'
+                        />
+                    )
+                }
+
+                {/* Post video */}
+                {
+                    item?.file && item?.file?.includes('postVideos') && (
+                        <Video 
+                            source={getSupabaseFileUrl(item?.file)}
+                            style={[styles.postMedia, {height: hp(30)}]}
+                            resizeMode='cover'
+                            useNativeControls
+                            isLooping
+                        />
+                    )
+                }
             </View>
         </View>
     )
