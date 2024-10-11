@@ -36,3 +36,27 @@ export const createOrUpdatePost = async (post) => {
         return { success: false, msg: 'Could not create or update your post' };
     }
 };
+
+export const fetchPosts = async (limit = 10) => {
+    try {
+        const {data, error} = await supabase
+        .from('posts')
+        .select(`
+            *,
+            user: users (id, name, image)
+        `)
+        .order('created_at', {ascending: false})
+        .limit(limit);
+
+        if (error) {
+            console.error('fetchPosts error', error);
+            return { success: false, msg: 'Could not fetch the posts' };
+        }
+
+        return {success: true, data: data};
+
+    } catch (error) {
+        console.error('fetchPosts error', error);
+        return { success: false, msg: 'Could not fetch the posts' };
+    }
+};

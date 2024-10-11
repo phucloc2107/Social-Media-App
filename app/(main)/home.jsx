@@ -1,5 +1,5 @@
-import { Alert, StyleSheet, Text, View , Button, Pressable} from 'react-native'
-import React from 'react'
+import { Alert, StyleSheet, Text, View , Button, Pressable, FlatList} from 'react-native'
+import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../../components/ScreenWrapper'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -8,11 +8,31 @@ import { theme } from '../../constants/theme'
 import Icon from '../../assets/icons'
 import { useRouter } from 'expo-router'
 import Avatar from '../../components/Avatar'
+import { fetchPosts } from '../../services/postService'
+import PostCard from '../../components/PostCard'
 
+var limit = 0;
 const home = () => {
 
     const {user, setAuth} = useAuth();
     const router = useRouter();
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        getPosts();
+    }, [])
+
+    const getPosts = async() => {
+        // call the API here
+        limit = limit + 10;
+
+        console.log('fetching post: ', limit)
+        let res = await fetchPosts();
+        if(res.success) {
+            setPosts(res.data);
+        }
+        console.log('data: ', res.data)
+    }
 
     // const onLogout = async() => {
     //     //setAuth(null);
@@ -40,11 +60,26 @@ const home = () => {
                                 uri={user?.image}
                                 size={hp(4.3)}
                                 rounded={theme.radius.sm}
-                                style={{borderWidth:2}}
+                                //style={{borderWidth:2}}
                             />
                         </Pressable>
                     </View>
                 </View>
+
+                {/* Posts */}
+                <FlatList 
+                    data={posts}
+                    showsVerticalScrollIndicator = {false}
+                    contentContainerStyle = {styles.listStyle}
+                    keyExtractor={item => item.id.toString()}
+                    renderItem={({item}) => <PostCard 
+                            item={item}
+                            currentUser={user}
+                            router={router}
+                        />
+                    }       
+                />
+
             </View>
         </ScreenWrapper>
     )
