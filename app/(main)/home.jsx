@@ -11,6 +11,7 @@ import Avatar from '../../components/Avatar'
 import { fetchPosts } from '../../services/postService'
 import PostCard from '../../components/PostCard'
 import Loading from '../../components/Loading'
+import { getUserData } from '../../services/userService'
 
 var limit = 0;
 const home = () => {
@@ -19,8 +20,26 @@ const home = () => {
     const router = useRouter();
     const [posts, setPosts] = useState([]);
 
+    const handlePostEvent = async(payload) => {
+        if (payload.eventType == 'INSERT' && payload?.new?.id) {
+            let newPost = {...payload.new}
+            let res = await getUserData(newPost.userId);
+            newPost.user = res.success ? res.data : {};
+            setPosts(prePosts => [newPost, ...prePosts]);
+        }
+    }
+
     useEffect(() => {
+        let postChannel = supabase
+        .channel('posts')
+        .on('postgres_changes', {event: '*', schema: 'public', table: 'posts'}, handlePostEvent)
+        .subscribe();
+
         getPosts();
+
+        return () => {
+            supabase.removeChannel(postChannel);
+        }
     }, [])
 
     const getPosts = async() => {
@@ -32,7 +51,7 @@ const home = () => {
         if(res.success) {
             setPosts(res.data);
         }
-        console.log('data: ', res.data)
+        //console.log('data: ', res.data)
     }
 
     // const onLogout = async() => {
