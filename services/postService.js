@@ -42,7 +42,8 @@ export const fetchPosts = async (limit = 10) => {
         .from('posts')
         .select(`
             *,
-            user: users (id, name, image)
+            user: users (id, name, image),
+            postLikes (*)
         `)
         .order('created_at', {ascending: false})
         .limit(limit);
@@ -96,7 +97,7 @@ export const removePostLike = async (postId, userId) => {
             return { success: false, msg: 'Could not remove the post like' };
         }
 
-        return {success: true, data: data};
+        return {success: true};
 
     } catch (error) {
         console.error('postLike error', error);
