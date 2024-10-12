@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text
   },
   form:{
-    gap:25
+    gap:26
   },
   forgotPassword: {
     textAlign:'right',
