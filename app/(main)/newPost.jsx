@@ -23,7 +23,7 @@ const NewPost = () => {
   const editorRef = useRef(null);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(file);
 
   const onPick = async (isImage) => {
     let mediaConfig = {

@@ -20,6 +20,9 @@ const Profile = () => {
     const {error} = await supabase.auth.signOut();
     if (error) {
         Alert.alert('Sign out', 'Error signing out!')
+    } else {
+      // After logout, redirect to login or welcome screen
+      router.replace('/login');  // Ensure the route exists and is correct
     }
   }
 

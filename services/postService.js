@@ -5,9 +5,8 @@ export const createOrUpdatePost = async (post) => {
     try {
         // Handle file upload (if file is an object and has a URI)
         if (post.file && typeof post.file === 'object') {
-            let isImage = post?.file?.type?.startsWith('image/');
+            let isImage = post?.file?.type == 'image';
             let folderName = isImage ? 'postImages' : 'postVideos';
-
             let fileResult = await uploadFile(folderName, post.file.uri, isImage);
 
             if (fileResult.success) {
