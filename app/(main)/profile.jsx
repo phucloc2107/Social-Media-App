@@ -22,7 +22,7 @@ const Profile = () => {
         Alert.alert('Sign out', 'Error signing out!')
     } else {
       // After logout, redirect to login or welcome screen
-      router.replace('/login');  // Ensure the route exists and is correct
+      router.replace('/welcome');  // Ensure the route exists and is correct
     }
   }
 

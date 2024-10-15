@@ -10,6 +10,7 @@ import Loading from '../../components/Loading'
 import Input from '../../components/Input'
 import { TouchableOpacity } from 'react-native'
 import Icon from '../../assets/icons'
+import CommentItem from '../../components/CommentItem'
 
 const postDetails = () => {
 
@@ -70,12 +71,20 @@ const postDetails = () => {
         )
     }
 
+    if (!post) {
+        return(
+            <View style={[styles.center, {justifyContent:'flex-start', marginTop:100}]}>
+                <Text style={styles.notFound}>Page not found !</Text>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.list} >
                 {post ? (
                     <PostCard
-                        item={{...post, comments: [{count: post.comments.length}]}}
+                        item={{...post, comments: [{count: post?.comments?.length}]}}
                         currentUser={user}
                         router={router}
                         hasShadow={false}
@@ -103,6 +112,27 @@ const postDetails = () => {
                             <TouchableOpacity style={styles.sendIcon} onPress={onNewComment}>
                                 <Icon name='send' color={theme.colors.primaryDark}/>
                             </TouchableOpacity>
+                        )
+                    }
+                </View>
+
+                {/* comment list */}
+                <View style={{marginVertical:15, gap:17}}>
+                    {
+                        post?.comments?.map(comment => 
+                            <CommentItem 
+                                key={comment?.id?.toString()}
+                                item={comment}
+                                canDelete = {user.id == comment.userId || user.id == post.userId}
+                            />
+                        )
+                    }
+
+                    {
+                        post?.comment?.length == 0 && (
+                            <Text style={{color: theme.colors.text, marginLeft: 5}}>
+                                Be first to comment!
+                            </Text>
                         )
                     }
                 </View>
