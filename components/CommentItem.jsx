@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { theme } from '../constants/theme'
 import { hp } from '../helpers/common'
@@ -7,9 +7,24 @@ import moment from 'moment'
 import { TouchableOpacity } from 'react-native'
 import Icon from '../assets/icons'
 
-const CommentItem = ({item, canDelete= false}) => {
+const CommentItem = ({item, canDelete=false, onDelete=()=>{}}) => {
 
     const createdAt = moment(item?.created_at).format('MMM d')
+
+    const handleDelete = () => {
+        Alert.alert('Confirm', 'Are you sure you want to do this?', [
+            {
+              text: 'Cancel',
+              onPress: () => console.log('modal canceled'),
+              style: 'cancel'
+            },
+            {
+              text: 'Delete',
+              onPress: () => onDelete(item),
+              style: 'destructive'
+            }
+        ])
+    }
 
     return (
         <View style={styles.container}>
@@ -36,7 +51,7 @@ const CommentItem = ({item, canDelete= false}) => {
                     </View>
                     {
                         canDelete && (
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={handleDelete}>
                                 <Icon name='delete' size={20} color={theme.colors.rose} />
                             </TouchableOpacity>
                         )

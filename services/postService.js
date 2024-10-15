@@ -63,6 +63,11 @@ export const fetchPosts = async (limit = 10) => {
 };
 
 export const fetchPostDetails = async (postId) => {
+    if (!postId || isNaN(postId)) {
+        console.error('Invalid postId', postId);
+        return { success: false, msg: 'Invalid post ID provided' };
+    }
+    
     try {
         const {data, error} = await supabase
         .from('posts')
@@ -152,5 +157,26 @@ export const createComment = async (comment) => {
     } catch (error) {
         console.error('comment error', error);
         return { success: false, msg: 'Could not create your comment' };
+    }
+};
+
+export const removeComment = async (commentId) => {
+    try {
+        
+        const {error} = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+
+        if (error) {
+            console.error('removeComment error', error);
+            return { success: false, msg: 'Could not remove the comment' };
+        }
+
+        return {success: true, data: {commentId}};
+
+    } catch (error) {
+        console.error('postLike error', error);
+        return { success: false, msg: 'Could not remove the comment' };
     }
 };
