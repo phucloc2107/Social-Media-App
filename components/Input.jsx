@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
         height: hp(7.2),
         alignItems:'center',
         justifyContent:'center',
-        borderWidth: 0.4,
+        borderWidth: 0.7,
         borderColor: theme.colors.text,
         borderRadius: theme.radius.xxl,
         borderCurve: 'continuous',
         paddingHorizontal: 18,
-        gap:12
+        gap:10
     }
 })

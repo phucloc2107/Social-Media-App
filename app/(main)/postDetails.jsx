@@ -1,33 +1,65 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import {hp, wp} from '../../helpers/common'
 import { theme } from '../../constants/theme'
-import { fetchPostDetails } from '../../services/postService'
+import { createComment, fetchPostDetails } from '../../services/postService'
 import PostCard from '../../components/PostCard'
 import { useAuth } from '../../contexts/AuthContext'
 import Loading from '../../components/Loading'
+import Input from '../../components/Input'
+import { TouchableOpacity } from 'react-native'
+import Icon from '../../assets/icons'
 
 const postDetails = () => {
 
     const {postId} = useLocalSearchParams();
     const {user} = useAuth();
     const router = useRouter();
-    console.log('got post ID: ', postId);
-
+    const inputRef = useRef(null);
+    const commentRef = useRef('');
+    
     const [post, setPost] = useState(null);
+    console.log('post details: ', post);
     const [startLoading, setStartLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
+    // useEffect(() => {
+    //     getPostDetails();
+    // },[])
     useEffect(() => {
-        getPostDetails();
-    },[])
+        if (postId) {
+            getPostDetails(); // Fetch post details only when postId is defined
+        } 
+    }, [postId]);
 
     const getPostDetails = async() => {
         // fetch post details here
         let res = await fetchPostDetails(postId);
         // console.log('got post details: ', res)
-        if (res.success) setPost(res.data);
-            setStartLoading(false);
+        if (res.success) 
+            setPost(res.data);
+        setStartLoading(false);
+    }
+
+    const onNewComment = async () => {
+        if (!commentRef.current) return null;
+        let data = {
+            userId: user?.id,
+            postId: post?.id,
+            text: commentRef.current
+        }
+        // create comment
+        setLoading(true);
+        let res = await createComment(data);
+        setLoading(false);
+        if (res.success) {
+            // send notification later
+            inputRef?.current?.clear();
+            commentRef.current = '';
+        } else {
+            Alert.alert('Comment', res.msg);
+        }
     }
 
     if(startLoading) {
@@ -41,13 +73,39 @@ const postDetails = () => {
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.list} >
-                <PostCard 
-                    item={post}
-                    currentUser={user}
-                    router={router}
-                    hasShadow={false}
-                    showMoreIcon = {false}
-                />
+                {post ? (
+                    <PostCard
+                        item={{...post, comments: [{count: post.comments.length}]}}
+                        currentUser={user}
+                        router={router}
+                        hasShadow={false}
+                        showMoreIcon={false}
+                    />
+                ) : (
+                    <Text style={styles.notFound}>Post not found</Text> // Handle missing post
+                )}
+
+                {/* comment input */}
+                <View style={styles.inputContainer}>
+                    <Input 
+                        inputRef={inputRef}
+                        placeholder= 'Type comment...'
+                        onChangeText={value => commentRef.current = value}
+                        placeholderTextColor = {theme.colors.textLight}
+                        containerStyle = {{flex:1, height: hp(6.2), borderRadius: theme.radius.xl}}
+                    />
+                    {
+                        loading ? (
+                            <View>
+                                <Loading size='small' />
+                            </View>
+                        ) : (
+                            <TouchableOpacity style={styles.sendIcon} onPress={onNewComment}>
+                                <Icon name='send' color={theme.colors.primaryDark}/>
+                            </TouchableOpacity>
+                        )
+                    }
+                </View>
             </ScrollView>
         </View>
     )
@@ -64,7 +122,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         flexDirection:'row',
         alignItems:'center',
-        gap:10
+        gap: 10
     },
     list: {
         paddingHorizontal: wp(4)
@@ -73,10 +131,12 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         borderWidth: 0.8,
-        backgroundColor: theme.colors.primary,
+        backgroundColor: 'white',
         borderRadius: theme.radius.lg,
         borderCurve:'continuous',
+        borderColor:theme.colors.primary,
         height: hp(5.8),
+        width: hp(5.8)
     },
     center:{
         flex:1,

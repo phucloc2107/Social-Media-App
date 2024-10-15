@@ -175,7 +175,7 @@ const PostCard = ({item, currentUser, router, hasShadow = true, showMoreIcon = t
                     </TouchableOpacity>
                     <Text style={styles.count}>
                         {
-                            0
+                            item?.comments[0]?.count
                         }
                     </Text>
                 </View>
