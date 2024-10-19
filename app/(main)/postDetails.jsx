@@ -35,6 +35,8 @@ const postDetails = () => {
     //         getPostDetails(); // Fetch post details only when postId is defined
     //     } 
     // }, [postId]);
+    
+    // handle new comment realtime
     const handleNewComment = async(payload) => {
         console.log('got new comment', payload.new)
         if (payload.new) {
@@ -50,6 +52,7 @@ const postDetails = () => {
         }
     }
 
+    // create new comment realtime
     useEffect(() => {
         if (!postId || isNaN(postId)) {
             console.error('Invalid postId', postId);
@@ -116,6 +119,14 @@ const postDetails = () => {
         }
     }
 
+    const onDeletePost = async (item) => {
+        console.log('Delete post: ', item)
+    }
+
+    const onEditPost = async (item) => {
+        console.log('Delete post: ', item)
+    }
+
     if(startLoading) {
         return(
             <View style={styles.center}>
@@ -142,6 +153,9 @@ const postDetails = () => {
                         router={router}
                         hasShadow={false}
                         showMoreIcon={false}
+                        showDelete={true}
+                        onDelete={onDeletePost}
+                        onEdit={onEditPost}
                     />
                 ) : (
                     <Text style={styles.notFound}>Post not found</Text> // Handle missing post
