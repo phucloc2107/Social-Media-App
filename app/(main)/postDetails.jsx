@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import {hp, wp} from '../../helpers/common'
 import { theme } from '../../constants/theme'
-import { createComment, fetchPostDetails, removeComment } from '../../services/postService'
+import { createComment, fetchPostDetails, removeComment, removePost } from '../../services/postService'
 import PostCard from '../../components/PostCard'
 import { useAuth } from '../../contexts/AuthContext'
 import Loading from '../../components/Loading'
@@ -121,10 +121,16 @@ const postDetails = () => {
 
     const onDeletePost = async (item) => {
         // Delete Post here
+        let res = await removePost(post.id);
+        if (res.success) {
+            router.back();
+        } else {
+            Alert.alert('Post: ', res.msg);
+        }
     }
 
     const onEditPost = async (item) => {
-        console.log('Delete post: ', item)
+        console.log('Edit post: ', item)
     }
 
     if(startLoading) {
@@ -137,7 +143,7 @@ const postDetails = () => {
 
     if (!post) {
         return(
-            <View style={[styles.center, {justifyContent:'flex-start', marginTop:100}]}>
+            <View style={[styles.center, { marginTop:100, backgroundColor:'white'}]}>
                 <Text style={styles.notFound}>Page not found !</Text>
             </View>
         )

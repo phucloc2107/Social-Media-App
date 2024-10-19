@@ -24,14 +24,14 @@ export const createOrUpdatePost = async (post) => {
             .single();
 
         if (error) {
-            console.error('createOrUpdatePost error', error);
+            console.log('createOrUpdatePost error', error);
             return { success: false, msg: 'Could not create or update your post' };
         }
 
         return { success: true, data };
 
     } catch (error) {
-        console.error('createOrUpdatePost error', error);
+        console.log('createOrUpdatePost error', error);
         return { success: false, msg: 'Could not create or update your post' };
     }
 };
@@ -50,21 +50,21 @@ export const fetchPosts = async (limit = 10) => {
         .limit(limit);
 
         if (error) {
-            console.error('fetchPosts error', error);
+            console.log('fetchPosts error', error);
             return { success: false, msg: 'Could not fetch the posts' };
         }
 
         return {success: true, data: data};
 
     } catch (error) {
-        console.error('fetchPosts error', error);
+        console.log('fetchPosts error', error);
         return { success: false, msg: 'Could not fetch the posts' };
     }
 };
 
 export const fetchPostDetails = async (postId) => {
     if (!postId || isNaN(postId)) {
-        console.error('Invalid postId', postId);
+        console.log('Invalid postId', postId);
         return { success: false, msg: 'Invalid post ID provided' };
     }
     
@@ -82,14 +82,14 @@ export const fetchPostDetails = async (postId) => {
         .single()
 
         if (error) {
-            console.error('fetchPostDetails error', error);
+            console.log('fetchPostDetails error', error);
             return { success: false, msg: 'Could not fetch the post' };
         }
 
         return {success: true, data: data};
 
     } catch (error) {
-        console.error('fetchPostDetails error', error);
+        console.log('fetchPostDetails error', error);
         return { success: false, msg: 'Could not fetch the post' };
     }
 };
@@ -104,14 +104,14 @@ export const createPostLike = async (postLike) => {
         .single()
 
         if (error) {
-            console.error('postLike error', error);
+            console.log('postLike error', error);
             return { success: false, msg: 'Could not like the post' };
         }
 
         return {success: true, data: data};
 
     } catch (error) {
-        console.error('postLike error', error);
+        console.log('postLike error', error);
         return { success: false, msg: 'Could not like the post' };
     }
 };
@@ -126,14 +126,14 @@ export const removePostLike = async (postId, userId) => {
         .eq('postId', postId)
 
         if (error) {
-            console.error('postLike error', error);
+            console.log('postLike error', error);
             return { success: false, msg: 'Could not remove the post like' };
         }
 
         return {success: true};
 
     } catch (error) {
-        console.error('postLike error', error);
+        console.log('postLike error', error);
         return { success: false, msg: 'Could not remove the post like' };
     }
 };
@@ -148,14 +148,14 @@ export const createComment = async (comment) => {
         .single();
 
         if (error) {
-            console.error('comment error', error);
+            console.log('comment error', error);
             return { success: false, msg: 'Could not create your comment' };
         }
 
         return {success: true, data: data};
 
     } catch (error) {
-        console.error('comment error', error);
+        console.log('comment error', error);
         return { success: false, msg: 'Could not create your comment' };
     }
 };
@@ -169,14 +169,14 @@ export const removeComment = async (commentId) => {
         .eq('id', commentId)
 
         if (error) {
-            console.error('removeComment error', error);
+            console.log('removeComment error', error);
             return { success: false, msg: 'Could not remove the comment' };
         }
 
         return {success: true, data: {commentId}};
 
     } catch (error) {
-        console.error('postLike error', error);
+        console.log('postLike error', error);
         return { success: false, msg: 'Could not remove the comment' };
     }
 };
@@ -187,17 +187,17 @@ export const removePost = async (postId) => {
         const {error} = await supabase
         .from('posts')
         .delete()
-        .eq('id', postId)
+        .eq('id', postId);
 
         if (error) {
-            console.error('remove post error', error);
+            console.log('removePost error', error);
             return { success: false, msg: 'Could not remove the post' };
         }
 
-        return {success: true, data: {postId}};
+        return { success: true, data: { postId } };
 
     } catch (error) {
-        console.error('remove post error', error);
+        console.log('removePost error', error);
         return { success: false, msg: 'Could not remove the post' };
     }
 };

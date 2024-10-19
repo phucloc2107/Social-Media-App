@@ -90,11 +90,11 @@ const PostCard = ({item, currentUser, router, hasShadow = true, showMoreIcon = t
         Share.share(content);
     }
 
-    const handlePostDelete = async () => {
+    const handlePostDelete =  () => {
         Alert.alert('Confirm', "Are you sure you want to do this?",[
             {
                 text: 'Cancel',
-                onPress: () => console.log('modal cancelled'),
+                onPress: () => console.log('modal canceled'),
                 style: 'cancel'
             },
             {
