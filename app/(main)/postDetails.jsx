@@ -17,7 +17,7 @@ import { createNotification } from '../../services/notificationService'
 
 const postDetails = () => {
 
-    const {postId} = useLocalSearchParams();
+    const {postId, commentId} = useLocalSearchParams();
     const {user} = useAuth();
     const router = useRouter();
     const inputRef = useRef(null);
@@ -66,7 +66,7 @@ const postDetails = () => {
             event: 'INSERT', 
             schema: 'public', 
             table: 'comments',
-            filter: `postId=eq.${postId}` },
+            filter: `postId=eq.${postId}`,},
             handleNewComment)
         .subscribe();
 
@@ -87,7 +87,7 @@ const postDetails = () => {
     }
 
     const onNewComment = async () => {
-        if (!commentRef.current) return null;
+        if (!commentRef.current || !post?.userId) return null;
         let data = {
             userId: user?.id,
             postId: post?.id,
@@ -211,6 +211,7 @@ const postDetails = () => {
                                 item={comment}
                                 canDelete = {user.id == comment.userId || user.id == post.userId}
                                 onDelete={onDeleteComment}
+                                highlight= {comment.id == commentId}
                             />
                         )
                     }

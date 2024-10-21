@@ -20,37 +20,77 @@ const home = () => {
     const router = useRouter();
     const [posts, setPosts] = useState([]);
     const [hasMore, setHasMore] = useState(true);
+    const [notificationCount, setNotificationCount] = useState(0);
 
+    // const handlePostEvent = async(payload) => {
+    //     //console.log('paylod: ', payload)
+    //     if (payload.eventType == 'INSERT' && payload?.new?.id) {
+    //         let newPost = {...payload.new}
+    //         let res = await getUserData(newPost.userId);
+    //         newPost.postLikes = [];
+    //         newPost.comments = [{count: 0}];
+    //         newPost.user = res.success ? res.data : {};
+    //         setPosts(prevPosts => [newPost, ...prevPosts]);
+    //     }
+    //     if (payload.eventType == 'DELETE' &&  payload.old.id) {
+    //         setPosts(prevPosts => {
+    //             let updatedPosts = prevPosts.filter(post => post.id != payload.old.id);
+    //             return updatedPosts;
+    //         })
+    //     }
+    //     if (payload.eventType == 'UPDATE' && payload?.new?.id) {
+    //         setPosts(prevPosts => {
+    //             let updatedPosts = prevPosts.map(post => {
+    //                 if (post.id == payload.new.id) {
+    //                     post.body = payload.new.body;
+    //                     post.file = payload.new.file;
+    //                 }
+    //                 return post;
+    //             })
+
+    //             return updatedPosts;
+    //         })
+    //     }
+    // }
+
+    // const handleNewNotification = async(payload) => {
+    //     console.log('got new notification: ', payload);
+    //     if (payload.eventType == 'INSERT' && payload.new.id) {
+    //         setNotificationCount(notificationCount => notificationCount + 1);
+    //     }
+    // }
+    const handleNewNotification = async(payload) => {
+        if (payload && payload.eventType === 'INSERT' && payload.new?.id) {
+            console.log('got new notification: ', payload);
+            setNotificationCount(prev => prev + 1);
+        }
+    }
+    
     const handlePostEvent = async(payload) => {
-       console.log('paylod: ', payload)
-        if (payload.eventType == 'INSERT' && payload?.new?.id) {
-            let newPost = {...payload.new}
+        if (payload?.eventType === 'INSERT' && payload?.new?.id) {
+            let newPost = {...payload.new};
             let res = await getUserData(newPost.userId);
             newPost.postLikes = [];
             newPost.comments = [{count: 0}];
             newPost.user = res.success ? res.data : {};
             setPosts(prevPosts => [newPost, ...prevPosts]);
         }
-        if (payload.eventType == 'DELETE' &&  payload.old.id) {
-            setPosts(prevPosts => {
-                let updatedPosts = prevPosts.filter(post => post.id != payload.old.id);
-                return updatedPosts;
-            })
+    
+        if (payload?.eventType === 'DELETE' && payload?.old?.id) {
+            setPosts(prevPosts => prevPosts.filter(post => post.id !== payload.old.id));
         }
-        if (payload.eventType == 'UPDATE' && payload?.new?.id) {
-            setPosts(prevPosts => {
-                let updatedPosts = prevPosts.map(post => {
-                    if (post.id == payload.new.id) {
-                        post.body = payload.new.body;
-                        post.file = payload.new.file;
-                    }
-                    return post;
-                })
-
-                return updatedPosts;
-            })
+    
+        if (payload?.eventType === 'UPDATE' && payload?.new?.id) {
+            setPosts(prevPosts => prevPosts.map(post => {
+                if (post.id === payload.new.id) {
+                    post.body = payload.new.body;
+                    post.file = payload.new.file;
+                }
+                return post;
+            }));
         }
     }
+        
 
     useEffect(() => {
         let postChannel = supabase
@@ -59,9 +99,14 @@ const home = () => {
         .subscribe();
 
         //getPosts();
+        let notificationChanel = supabase
+        .channel('notifications')
+        .on('postgres_changes', {event: 'INSERT', schema: 'public', table: 'notifications', filter: `receiverId.eq.${user.id}`}, handleNewNotification)
+        .subscribe();
 
         return () => {
             supabase.removeChannel(postChannel);
+            supabase.removeChannel(notificationChanel);
         }
     }, [])
 
@@ -94,8 +139,18 @@ const home = () => {
                 <View style={styles.header}>
                     <Text style={styles.title}>JoinUs</Text>
                     <View style={styles.icons}>
-                        <Pressable onPress={() => router.push('notifications')}>
+                        <Pressable onPress={() => {
+                            setNotificationCount(0)
+                            router.push('notifications')
+                        }}>
                             <Icon name='heart' size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
+                            {
+                                notificationCount > 0 && (
+                                    <View style={styles.pill}>
+                                        <Text style={styles.pillText}>{notificationCount}</Text>
+                                    </View>
+                                )
+                            }
                         </Pressable>
                         <Pressable onPress={() => router.push('newPost')}>
                             <Icon name='plus' size={hp(3.2)} strokeWidth={2} color={theme.colors.text} />
